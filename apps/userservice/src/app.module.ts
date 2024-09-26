@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppEntity } from './app.entity';
+import { ClientController } from './client.controller';
 
 @Module({
   imports: [
@@ -10,15 +11,15 @@ import { AppEntity } from './app.entity';
       type: 'mysql',
       host: 'localhost',
       port: 3306,
-      username: 'tu_usuario',
-      password: 'tu_contraseña',
-      database: 'nombre_base_datos',
+      username: 'root', 
+      password: '', 
+      database: 'users',
       autoLoadEntities: true,
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([AppEntity]), // Importa la entidad para usarla en el repositorio
+    TypeOrmModule.forFeature([AppEntity]),
   ],
-  controllers: [AppController],
+  controllers: [AppController, ClientController],
   providers: [AppService],
 })
 export class AppModule {}

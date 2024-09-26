@@ -1,39 +1,32 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, Query } from '@nestjs/common';
+import { Controller, HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
+import { MessagePattern } from '@nestjs/microservices';
 import { AppService } from './app.service';
 
 @Controller('users')
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Post()
-  createUser(@Body('nombre') nombre: string, @Body('email') email: string) {
-    return this.appService.createUser(nombre, email);
+  @MessagePattern({ cmd: 'create_user' })
+  async createUser(data: { nombre: string; email: string }) {
+    return await this.appService.createUser(data.nombre, data.email);
   }
 
-  @Get()
-  findAll(
-    @Query('page') page = 1,
-    @Query('limit') limit = 10,
-  ) {
-    return this.appService.findAll(Number(page), Number(limit));
+  @MessagePattern({ cmd: 'get_users' })
+  async findAll(data: any) {
+    return await this.appService.findAll(data.page || 1, data.limit || 10);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.appService.findOne(id);
+  @MessagePattern({ cmd: 'get_user' })
+  async findOne(data: { id: number }) {
+    return await this.appService.findOne(data.id);
+  }
+  @MessagePattern({ cmd: 'update_user' })
+  async updateUser(data: { id: number; nombre: string; email: string }) {
+    return await this.appService.updateUser(data.id, data.nombre, data.email);
   }
 
-  @Put(':id')
-  updateUser(
-    @Param('id') id: number,
-    @Body('nombre') nombre: string,
-    @Body('email') email: string,
-  ) {
-    return this.appService.updateUser(id, nombre, email);
-  }
-
-  @Delete(':id')
-  deleteUser(@Param('id') id: number) {
-    return this.appService.deleteUser(id);
-  }
+  @MessagePattern({ cmd: 'delete_user' })
+  async deleteUser(data: { id: number }) {
+    return await this.appService.deleteUserById(data.id);
+}
 }
