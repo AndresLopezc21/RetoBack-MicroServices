@@ -1,5 +1,5 @@
 // src/app.controller.ts
-import { Controller, HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
+import { Controller} from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { AppService } from './app.service';
 import { CreateUserDto, UpdateUserDto, UserIdDto } from './dto/user.dto'; 

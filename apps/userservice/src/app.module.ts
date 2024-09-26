@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppEntity } from './app.entity';
 import { ClientController } from './client.controller';
+import { TaskModule } from 'apps/taskservice/src/taskservice.module';
 
 @Module({
   imports: [
