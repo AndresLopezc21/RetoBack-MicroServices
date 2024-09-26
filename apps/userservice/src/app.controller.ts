@@ -3,6 +3,7 @@ import { Controller} from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { AppService } from './app.service';
 import { CreateUserDto, UpdateUserDto, UserIdDto } from './dto/user.dto'; 
+import { AppEntity } from './app.entity';
 
 @Controller('users')
 export class AppController {
@@ -14,8 +15,9 @@ export class AppController {
     }
 
     @MessagePattern({ cmd: 'get_users' })
-    async findAll(data: any) {
-        return await this.appService.findAll();
+    async findAll(data: { page: number; limit: number }): Promise<AppEntity[]> {
+        const { page, limit } = data;
+        return await this.appService.findAll(page, limit);
     }
 
     @MessagePattern({ cmd: 'get_user' })

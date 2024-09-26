@@ -23,14 +23,14 @@ export class ClientController {
   }
 
   @Get('users')
-  async getAllUsers() {
-    return this.client.send({ cmd: 'get_users' }, {});
-  }
+    async getAllUsers(@Query('page') page: number, @Query('limit') limit: number) {
+        return this.client.send({ cmd: 'get_users' }, { page, limit });
+    }
 
   @Get('user')
   async getUser(@Query('id') id: number) {
       try {
-          const user = await this.client.send({ cmd: 'get_user' }, { id }).toPromise();
+          const user =  this.client.send({ cmd: 'get_user' }, { id });
 
           if (!user) {
               throw new HttpException('El usuario con ID correspondiente no existe', HttpStatus.NOT_FOUND);
@@ -62,7 +62,7 @@ export class ClientController {
   @Delete('user')
   async deleteUser(@Query('id') id: number) {
       try {
-          return await this.client.send({ cmd: 'delete_user' }, { id }).toPromise();
+          return this.client.send({ cmd: 'delete_user' }, { id });
       } catch (error) {
           if (error.response && error.response.statusCode === 404) {
               throw new HttpException('El usuario con ID correspondiente no existe', HttpStatus.NOT_FOUND);

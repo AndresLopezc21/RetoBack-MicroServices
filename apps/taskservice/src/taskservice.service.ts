@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TaskEntity } from './taskservice.entity';
-import { CreateTaskDto} from './dto/task.dto';
+import { CreateTaskDto, UpdateTaskDto} from './dto/task.dto';
 
 @Injectable()
 export class TaskService {
@@ -16,26 +16,53 @@ export class TaskService {
       return await this.taskRepository.save(task);
     }
 
-    async findAll(): Promise<TaskEntity[]> {
-        return await this.taskRepository.find();
+    async findAll(page: number, limit: number): Promise<TaskEntity[]> {
+        const skip = (page - 1) * limit;
+        
+        return await this.taskRepository.find({
+          skip,
+          take: limit,
+        });
       }
-  }
 
-/*
-    async findAll(): Promise<TaskEntity[]> {
-        return await this.taskRepository.find();
-    }
-
-    async findByUserId(userId: number): Promise<TaskEntity[]> {
-        return await this.taskRepository.find({ where: { userId } });
+      async findByUser(userId: number, page: number, limit: number): Promise<TaskEntity[]> {
+        const user = await this.taskRepository.findOne({ where: { userId } });
+        if (!user) {
+            throw new NotFoundException(`No existe una tarea con el id introducido`);
+        }
+        const [tasks, total] = await this.taskRepository.findAndCount({
+            where: { userId },
+            take: limit,
+            skip: (page - 1) * limit,
+        });
+        
+        return tasks;
     }
 
     async updateTask(id: number, updateTaskDto: UpdateTaskDto): Promise<TaskEntity> {
-      await this.taskRepository.update(id, updateTaskDto);
-      return this.taskRepository.findOne({ where: { id } }); 
-  }
+        // Buscar la tarea usando un objeto con 'where'
+        const task = await this.taskRepository.findOne({ where: { id } });
+        if (!task) {
+            throw new NotFoundException(`No se encontró una tarea con el id introducido`);
+        }
 
-    async deleteTask(id: number): Promise<void> {
-        await this.taskRepository.delete(id);
+        // Actualiza los campos de la tarea
+        task.title = updateTaskDto.title ?? task.title;
+        task.description = updateTaskDto.description ?? task.description;
+        task.status = updateTaskDto.status ?? task.status;
+
+        await this.taskRepository.save(task);
+        return task;
     }
-}*/
+    
+    async deleteTask(id: number): Promise<{ message: string }> {
+        const task = await this.taskRepository.findOne({ where: { id } });
+
+        if (!task) {
+            throw new NotFoundException('La tarea con ID correspondiente no existe');
+        }
+
+        await this.taskRepository.delete(id);
+        return { message: 'Tarea eliminada correctamente' };
+    }
+  }

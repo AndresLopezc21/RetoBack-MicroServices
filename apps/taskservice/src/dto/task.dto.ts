@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsEnum, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsEnum, IsNumber, IsInt, IsOptional, IsPositive } from 'class-validator';
 
 export enum TaskStatus {
     PENDING = 'pendiente',
@@ -19,4 +19,39 @@ export class CreateTaskDto {
 
     @IsEnum(TaskStatus)
     status: TaskStatus;
+}
+
+export class GetTasksByUserDto {
+
+    @IsNotEmpty()
+    userId: number;
+
+
+    @IsOptional()
+    page?: number;
+
+
+    @IsOptional()
+    limit?: number;
+}
+
+export class UpdateTaskDto {
+    @IsOptional()
+    @IsNotEmpty()
+    title?: string;
+
+    @IsOptional()
+    @IsNotEmpty()
+    description?: string;
+
+    @IsOptional()
+    @IsEnum(TaskStatus)
+    status?: TaskStatus;
+}
+
+export class TaskIdDto {
+    @IsNotEmpty()
+    @IsInt()
+    @IsPositive()
+    id: number;
 }

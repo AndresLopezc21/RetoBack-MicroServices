@@ -20,8 +20,12 @@ export class AppService {
         return await this.userRepository.save(newUser);
       }
 
-    async findAll(): Promise<AppEntity[]> {
-        return await this.userRepository.find();
+      async findAll(page: number, limit: number): Promise<AppEntity[]> {
+        const [results, total] = await this.userRepository.findAndCount({
+            skip: (page - 1) * limit,
+            take: limit,
+        });
+        return results;
     }
 
     async findOne(id: number): Promise<AppEntity | null> {
