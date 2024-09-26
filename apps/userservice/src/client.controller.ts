@@ -1,5 +1,6 @@
 import { Controller, Post, Body, Get, Query, Delete, Put, HttpStatus, HttpException } from '@nestjs/common';
 import { ClientProxy, ClientProxyFactory, Transport } from '@nestjs/microservices';
+import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 
 @Controller('client')
 export class ClientController {
@@ -13,12 +14,12 @@ export class ClientController {
   }
 
   @Post('create-user')
-  async createUser(@Body() body: { nombre: string; email: string }) {
-      try {
-          return await this.client.send({ cmd: 'create_user' }, body).toPromise();
-      } catch (error) {
-          throw new HttpException('Error al crear el usuario', HttpStatus.INTERNAL_SERVER_ERROR);
-      }
+  async createUser(@Body() createUserDto: CreateUserDto) {
+    try {
+      return this.client.send({ cmd: 'create_user' }, createUserDto); 
+    } catch (error) {
+      throw new HttpException('Error al crear el usuario', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @Get('users')
@@ -45,19 +46,19 @@ export class ClientController {
   }
 
   @Post('update-user')
-  async updateUser(@Query('id') id: number, @Body() body: { nombre: string; email: string }) {
-      try {
-          return await this.client.send({ cmd: 'update_user' }, { id, nombre: body.nombre, email: body.email }).toPromise();
-      } catch (error) {
-          if (error.response && error.response.statusCode === 404) {
-              throw new HttpException('El usuario con ID correspondiente no existe', HttpStatus.NOT_FOUND);
-          } else if (error.response && error.response.statusCode === 409) {
-              throw new HttpException('El email ya está en uso', HttpStatus.CONFLICT);
-          }
-          throw new HttpException('Error interno al actualizar el usuario', HttpStatus.INTERNAL_SERVER_ERROR);
+  async updateUser(@Query('id') id: number, @Body() updateUserDto: UpdateUserDto) {
+    try {
+      return this.client.send({ cmd: 'update_user' }, { id, ...updateUserDto }); 
+    } catch (error) {
+      if (error.response && error.response.statusCode === 404) {
+        throw new HttpException('El usuario con ID correspondiente no existe', HttpStatus.NOT_FOUND);
+      } else if (error.response && error.response.statusCode === 409) {
+        throw new HttpException('El email ya está en uso', HttpStatus.CONFLICT);
       }
+      throw new HttpException('Error interno al actualizar el usuario', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
- 
+
   @Delete('user')
   async deleteUser(@Query('id') id: number) {
       try {
