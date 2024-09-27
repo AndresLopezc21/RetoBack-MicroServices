@@ -29,41 +29,33 @@ export class AppService {
     }
 
     async findOne(id: number): Promise<AppEntity | null> {
-        const user = await this.userRepository.findOne({ where: { id } });
-
-        if (!user) {
-            throw new NotFoundException('El usuario con ID correspondiente no existe');
-        }
-
-        return user;
+      const user = await this.userRepository.findOne({ where: { id } });
+      if (!user) {
+        throw new NotFoundException('El usuario con ID correspondiente no existe');
+      }
+      return user;
     }
     
     async updateUser(id: number, updateData: UpdateUserDto): Promise<{ message: string }> {
     const user = await this.userRepository.findOne({ where: { id } });
-
     if (!user) {
       throw new NotFoundException('El usuario con ID correspondiente no existe');
     }
-
     const existingUser = await this.userRepository.findOne({ where: { email: updateData.email } });
     if (existingUser && existingUser.id !== id) {
       throw new ConflictException('El correo electrónico ya está en uso por otro usuario');
     }
-
     user.nombre = updateData.nombre;
     user.email = updateData.email;
-
     await this.userRepository.save(user);
     return { message: 'Usuario actualizado correctamente' };
   }
 
     async deleteUserById(id: number): Promise<{ message: string }> {
         const user = await this.userRepository.findOne({ where: { id } });
-
         if (!user) {
             throw new NotFoundException('El usuario con ID correspondiente no existe');
         }
-
         await this.userRepository.delete(id);
         return { message: "Usuario eliminado correctamente" };
     }

@@ -22,7 +22,7 @@ export class AppController {
 
     @MessagePattern({ cmd: 'get_user' })
     async findOne(data: UserIdDto) {
-        return await this.appService.findOne(data.id);
+      return await this.appService.findOne(data.id);
     }
 
     @MessagePattern({ cmd: 'update_user' })
