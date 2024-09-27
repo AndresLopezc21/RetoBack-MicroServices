@@ -18,10 +18,10 @@ export class TaskController {
     return await this.taskService.findAll(data.page, data.limit);
   }
 
-  @MessagePattern({ cmd: 'get_tasks_by_user' })
-  async findByUser(data: { userId: number, page: number, limit: number }): Promise<TaskEntity[]> {
-    return await this.taskService.findByUser(data.userId, data.page, data.limit);
-  }
+    @MessagePattern({ cmd: 'get_tasks_by_user' })
+    async findByUser(data: GetTasksByUserDto) {
+        return await this.taskService.findByUser(data.userId);
+    }
 
     @MessagePattern({ cmd: 'edit_task' })
     async editTask(@Payload('id') id: number, @Payload() updateTaskDto: UpdateTaskDto): Promise<TaskEntity> {

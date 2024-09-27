@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsEnum, IsNumber, IsInt, IsOptional, IsPositive } from 'class-validator';
+import { IsNotEmpty, IsEnum, IsNumber, IsInt, IsOptional, IsPositive, Min } from 'class-validator';
 
 export enum TaskStatus {
     PENDING = 'pendiente',
@@ -22,33 +22,24 @@ export class CreateTaskDto {
 }
 
 export class GetTasksByUserDto {
-
-    @IsNotEmpty()
+    @IsNotEmpty({ message: 'El userId no puede estar vacío' })
+    @IsInt({ message: 'El userId debe ser un número entero' })
     userId: number;
-
-
-    @IsOptional()
-    page?: number;
-
-
-    @IsOptional()
-    limit?: number;
 }
 
 export class UpdateTaskDto {
     @IsOptional()
-    @IsNotEmpty()
+    @IsNotEmpty({ message: 'El título no puede estar vacío' })
     title?: string;
 
     @IsOptional()
-    @IsNotEmpty()
+    @IsNotEmpty({ message: 'La descripción no puede estar vacía' })
     description?: string;
 
     @IsOptional()
-    @IsEnum(TaskStatus)
+    @IsEnum(TaskStatus, { message: 'El estado debe ser uno de los valores válidos: pendiente, en progreso, completada' })
     status?: TaskStatus;
 }
-
 export class TaskIdDto {
     @IsNotEmpty()
     @IsInt()

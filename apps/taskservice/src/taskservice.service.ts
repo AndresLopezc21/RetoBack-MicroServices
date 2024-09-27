@@ -25,33 +25,29 @@ export class TaskService {
         });
       }
 
-      async findByUser(userId: number, page: number, limit: number): Promise<TaskEntity[]> {
-        const user = await this.taskRepository.findOne({ where: { userId } });
-        if (!user) {
-            throw new NotFoundException(`No existe una tarea con el id introducido`);
+      async findByUser(userId: number): Promise<TaskEntity[]> {
+        const tasks = await this.taskRepository.find({ where: { userId } });
+        if (!tasks.length) {
+            throw new NotFoundException(`No se encontraron tareas para el usuario con ID: ${userId}`);
         }
-        const [tasks, total] = await this.taskRepository.findAndCount({
-            where: { userId },
-            take: limit,
-            skip: (page - 1) * limit,
-        });
-        
         return tasks;
     }
 
     async updateTask(id: number, updateTaskDto: UpdateTaskDto): Promise<TaskEntity> {
-        // Buscar la tarea usando un objeto con 'where'
         const task = await this.taskRepository.findOne({ where: { id } });
         if (!task) {
-            throw new NotFoundException(`No se encontró una tarea con el id introducido`);
+            throw new NotFoundException('No se encontró una tarea con el id introducido');
         }
-
+    
+        console.log('Tarea encontrada:', task);  // Log tarea antes de la actualización
+    
         // Actualiza los campos de la tarea
         task.title = updateTaskDto.title ?? task.title;
         task.description = updateTaskDto.description ?? task.description;
         task.status = updateTaskDto.status ?? task.status;
-
+    
         await this.taskRepository.save(task);
+        console.log('Tarea actualizada:', task);  // Log tarea después de la actualización
         return task;
     }
     
