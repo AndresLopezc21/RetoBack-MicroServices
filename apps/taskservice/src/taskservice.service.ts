@@ -38,16 +38,12 @@ export class TaskService {
         if (!task) {
             throw new NotFoundException('No se encontró una tarea con el id introducido');
         }
-    
-        console.log('Tarea encontrada:', task);  // Log tarea antes de la actualización
-    
-        // Actualiza los campos de la tarea
         task.title = updateTaskDto.title ?? task.title;
         task.description = updateTaskDto.description ?? task.description;
         task.status = updateTaskDto.status ?? task.status;
     
         await this.taskRepository.save(task);
-        console.log('Tarea actualizada:', task);  // Log tarea después de la actualización
+        console.log('Tarea actualizada:', task);  
         return task;
     }
     

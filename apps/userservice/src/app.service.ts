@@ -21,7 +21,7 @@ export class AppService {
       }
 
       async findAll(page: number, limit: number): Promise<AppEntity[]> {
-        const [results, total] = await this.userRepository.findAndCount({
+        const [results] = await this.userRepository.findAndCount({
             skip: (page - 1) * limit,
             take: limit,
         });
