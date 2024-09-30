@@ -68,13 +68,13 @@ export class ClientController {
       if (isNaN(id)) {
         throw new HttpException('El ID debe ser un número entero', HttpStatus.BAD_REQUEST);
       }
-      try { const user = await this.client.send({ cmd: 'get_user' }, { id }).toPromise();
+      try { const user = this.client.send({ cmd: 'get_user' }, { id });
 
       if (!user) {
         throw new HttpException('El usuario con ID correspondiente no existe', HttpStatus.NOT_FOUND);
       }
 
-      return this.client.send({ cmd: 'update_user' }, { id, ...updateUserDto }).toPromise();
+      return this.client.send({ cmd: 'update_user' }, { id, ...updateUserDto });
     } catch (error) {
       if (error.response && error.response.statusCode === 404) {
         throw new HttpException('El usuario con ID correspondiente no existe', HttpStatus.NOT_FOUND);
